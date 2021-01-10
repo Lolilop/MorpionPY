@@ -1,4 +1,5 @@
 #coding : utf-8
+#!/usr/bin/env python3
 
 import Cserver
 import CToc
@@ -56,10 +57,11 @@ morpion = None
 if(lan == 1) :
 	morpion = CToc.TIC()
 elif(lan == 2) :
+
+	print("En attente du client : ")
 	server = Cserver.Server()
 	morpion = CToc.TIC(server)
-
-morpion.print_tic_tac_toe()
+	print("Connexion etablie : ")
 
 while morpion.nb_coups < morpion.nb_coupsMax and morpion.continuer  :
 

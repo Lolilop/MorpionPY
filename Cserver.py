@@ -12,12 +12,19 @@ class Server() :
 
 		self.values = []
 
-		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #creation socket IPV4 TCP
+		try :
 
-		self.sock.bind((host,port)) #associe le socket à une adresse locale
-		self.sock.listen(5) #commence à écouter les connexions entrantes
+			self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #creation socket IPV4 TCP
 
-		self.client , self.info = self.sock.accept() #accepte une connexion, retourne un nouveau socket et une adresse client
+			self.sock.bind((host,port)) #associe le socket à une adresse locale
+			self.sock.listen(5) #commence à écouter les connexions entrantes
+
+			self.client , self.info = self.sock.accept() #accepte une connexion, retourne un nouveau socket et une adresse client
+
+		except socket.error :
+
+			self.socke.close()
+			exit()
 
 	def client(self) :
 
@@ -35,7 +42,13 @@ class Server() :
 
 	def receive(self) :
 
-		message = str(self.client.recv(1024))
+		try :
+
+			message = str(self.client.recv(1024))
+		except socket.error:
+			self.sock.close()
+			exit()
+
 		message = message.split("b'")
 		message = message[1]
 
@@ -47,11 +60,20 @@ class Server() :
 		
 			message = valeur.encode()
 		
-			self.client.send(message)
+			try :
+				self.client.send(message)
+			except socket.error :
+				self.sock.close()
+				exit()
+
 			time.sleep(0.0001)
 
 			time.sleep(0.0001)
-		self.client.send(b"seend all")
+		try :
+			self.client.send(b"seend all")
+		except socket.error :
+			self.sock.close()
+			exit()
 
 
 	def seedValueB(self) :
@@ -60,11 +82,20 @@ class Server() :
 		
 		while message != b"ok":
 
-			self.client.send(b"break")
-			message = self.client.recv(1024)
+			try :
+				self.client.send(b"break")
+				message = self.client.recv(1024)
+			except socket.error :
+				self.socke.close()
+				exit()
 
 	def seedValueNum(self,partie) :
 
 		game = str(partie.encode())
-		self.client.send(game)
+
+		try :
+			self.client.send(game)
+		except :
+			self.sock.close()
+			exit()
 
