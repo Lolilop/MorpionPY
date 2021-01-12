@@ -3,189 +3,171 @@
 import socket
 import Cserver
 
+"""
+									███╗░░░███╗░█████╗░██████╗░██████╗░██╗░█████╗░███╗░░██╗
+									████╗░████║██╔══██╗██╔══██╗██╔══██╗██║██╔══██╗████╗░██║
+									██╔████╔██║██║░░██║██████╔╝██████╔╝██║██║░░██║██╔██╗██║
+									██║╚██╔╝██║██║░░██║██╔══██╗██╔═══╝░██║██║░░██║██║╚████║
+									██║░╚═╝░██║╚█████╔╝██║░░██║██║░░░░░██║╚█████╔╝██║░╚███║
+									╚═╝░░░░░╚═╝░╚════╝░╚═╝░░╚═╝╚═╝░░░░░╚═╝░╚════╝░╚═╝░░╚══╝
+
+
+			 ██████ ██       █████  ███████ ███████     ███    ███  ██████  ██████  ██████  ██  ██████  ███    ██ 
+			██      ██      ██   ██ ██      ██          ████  ████ ██    ██ ██   ██ ██   ██ ██ ██    ██ ████   ██ 
+			██      ██      ███████ ███████ ███████     ██ ████ ██ ██    ██ ██████  ██████  ██ ██    ██ ██ ██  ██ 
+			██      ██      ██   ██      ██      ██     ██  ██  ██ ██    ██ ██   ██ ██      ██ ██    ██ ██  ██ ██ 
+			 ██████ ███████ ██   ██ ███████ ███████     ██      ██  ██████  ██   ██ ██      ██  ██████  ██   ████ """
 
 class TIC():
-	"""docstring for TIC"""
+	
+	"""
+								██╗███╗   ██╗██╗████████╗██╗ █████╗ ████████╗███████╗██╗   ██╗██████╗ 
+								██║████╗  ██║██║╚══██╔══╝██║██╔══██╗╚══██╔══╝██╔════╝██║   ██║██╔══██╗
+								██║██╔██╗ ██║██║   ██║   ██║███████║   ██║   █████╗  ██║   ██║██████╔╝
+								██║██║╚██╗██║██║   ██║   ██║██╔══██║   ██║   ██╔══╝  ██║   ██║██╔══██╗
+								██║██║ ╚████║██║   ██║   ██║██║  ██║   ██║   ███████╗╚██████╔╝██║  ██║
+								╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝   ╚═╝╚═╝  ╚═╝   ╚═╝   ╚══════╝ ╚═════╝ ╚═╝  ╚═╝
+	"""
 	def __init__(self,serveur = None):
 
-		self.nb_coups = 1
+		self.__nb_strokes = 1 #Private <int>
+		self.__nb_StrokesMax = 9 #Private [const <int>]
 
-		self.nb_coupsMax = 9
+		self.__values = ["1","2","3","4","5","6","7","8","9"] #Private <list>
+		self.__list = ["1","2","3","4","5","6","7","8","9"] #Private <list>
 
-		self.values = ["1","2","3","4","5","6","7","8","9"]
+		self.__whyWin = 0 #Private <int>
 
-		self.partie = 0
-
-		self.continuer = True
+		self.__continue = True	#Private <int>
 		
-		self.combinaison = [
-								[0,1,2],
-								[3,4,5],
-								[6,7,8],
+		self.__combination = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]] #private [2D <list>]
+	
+	"""
+							 █████╗ ███████╗███████╗███████╗███████╗███████╗███████╗██╗   ██╗██████╗ ███████╗
+							██╔══██╗██╔════╝██╔════╝██╔════╝██╔════╝██╔════╝██╔════╝██║   ██║██╔══██╗██╔════╝
+							███████║███████╗███████╗█████╗  ███████╗███████╗█████╗  ██║   ██║██████╔╝███████╗
+							██╔══██║╚════██║╚════██║██╔══╝  ╚════██║╚════██║██╔══╝  ██║   ██║██╔══██╗╚════██║
+							██║  ██║███████║███████║███████╗███████║███████║███████╗╚██████╔╝██║  ██║███████║
+							╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚══════╝╚══════╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚══════
+	"""
+	def get_nb_strockes(self) :
+		return self.__nb_strokes
 
-								[0,3,6],
-								[1,4,7],
-								[2,5,8],
+	def get_nb_strockesMax(self):
+		return self.__nb_StrokesMax
 
-								[0,4,8],
-								[2,4,6],
+	def get_whyWin(self) :
+		return self.__whyWin
 
-			  				]
-		
+	def get_continue(self) : 
+		return self.__continue
 
-		if(serveur != None) :
-			self.liste = ["1","2","3","4","5","6","7","8","9"]
+	def get_list(self) :
+		return self.__list
 
-	def GUI(self) :
+	"""
+							███╗   ███╗██╗   ██╗████████╗ █████╗ ████████╗███████╗██╗   ██╗██████╗ ███████╗
+							████╗ ████║██║   ██║╚══██╔══╝██╔══██╗╚══██╔══╝██╔════╝██║   ██║██╔══██╗██╔════╝
+							██╔████╔██║██║   ██║   ██║   ███████║   ██║   █████╗  ██║   ██║██████╔╝███████╗
+							██║╚██╔╝██║██║   ██║   ██║   ██╔══██║   ██║   ██╔══╝  ██║   ██║██╔══██╗╚════██║
+							██║ ╚═╝ ██║╚██████╔╝   ██║   ██║  ██║   ██║   ███████╗╚██████╔╝██║  ██║███████║
+							╚═╝     ╚═╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝   ╚═╝   ╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝
+	"""
 
-		print("""
-			███╗░░░███╗░█████╗░██████╗░██████╗░██╗░█████╗░███╗░░██╗
-			████╗░████║██╔══██╗██╔══██╗██╔══██╗██║██╔══██╗████╗░██║
-			██╔████╔██║██║░░██║██████╔╝██████╔╝██║██║░░██║██╔██╗██║
-			██║╚██╔╝██║██║░░██║██╔══██╗██╔═══╝░██║██║░░██║██║╚████║
-			██║░╚═╝░██║╚█████╔╝██║░░██║██║░░░░░██║╚█████╔╝██║░╚███║
-			╚═╝░░░░░╚═╝░╚════╝░╚═╝░░╚═╝╚═╝░░░░░╚═╝░╚════╝░╚═╝░░╚══╝\n\n""")
+	def set_nb_strockes(self) :
+		self.__nb_strokes = self.__nb_strokes + 1
 
-		print("1) Screen")
-		print("2) Local")
+	def set_nb_whyWin(self,why_win) :
+		self.__whyWin = why_win
 
-		lan = input("> ")
-		return int(lan)
+	"""
+							███████╗ ██████╗ ███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
+							██╔════╝██╔═══██╗████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
+							█████╗  ██║   ██║██╔██╗ ██║██║        ██║   ██║██║   ██║██╔██╗ ██║███████╗
+							██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ██║██║   ██║██║╚██╗██║╚════██║
+							██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║
+							╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
+                                                
+	"""
 
-	def comb(self,user,color,char) :
+	def user(self,char,color) :
 
-		continuer = True
+		"""
+		=========================================================================
+		|							Select the case on the array  				|
+		=========================================================================
+		"""
 
-		if(self.values[int(user)-1] != '\033[36m' + 'o' + '\033[37m' and self.values[int(user)-1] != '\033[35m' + 'x' + '\033[37m') :
+		_continue = True
 
-			self.values[int(user)-1] = color + str(char) + '\033[37m'
+		while _continue:
+			_user = input("> ")
+			_continue = self.combination(_user,color,char)
 
-			for i in range(len(self.combinaison)) :
-				for j in range(len(self.combinaison[i])) :
+	def combination(self,user,color,char) :
 
-					if(self.combinaison[i][j] == int(user)-1) :
-						self.combinaison[i][j] = char
+		"""
+		=========================================================================
+		|							Save changes on the list  					|
+		=========================================================================
+		"""
 
-			continuer = False
+		_continue = True
+
+		if(self.__values[int(user)-1] != '\033[36m' + 'o' + '\033[37m') and (self.__values[int(user)-1] != '\033[35m' + 'x' + '\033[37m') :
+
+			self.__values[int(user)-1] = color + str(char) + '\033[37m'
+			self.__list[int(user)-1] = str(char)
+
+			for i in range(len(self.__combination)) :
+				for j in range(len(self.__combination[i])) :
+
+					if(self.__combination[i][j] == int(user)-1) :
+						self.__combination[i][j] = char
+
+			_continue = False
 
 		else :
+			print("you are not going to take your opponent's position")
 
-			print("vous allez pas prendre la position de votre adversaire")
-
-		return continuer
-
-	def User(self,char,color) :
-
-		continuer = True
-
-		while continuer:
-			user = input("> ")
-			continuer = self.comb(user,color,char)
-
-
-	def User_local(self,char,color) :
-
-		continuer = True
-
-		while continuer:
-			user = input("> ")
-			continuer = self.comb_local(user,color,char)
+		return _continue
 
 	def search(self) :
 
-		self.print_tic_tac_toe()
-		point = len(self.combinaison)
-		i = 0
+		"""
+		=========================================================================
+		|							Search the winner 							|
+		=========================================================================
+		"""
 
-		while i < point and self.continuer:
+		size = len(self.__combination)
 
-			if(i < point and 'x' in self.combinaison[i] and 'o' in self.combinaison[i]) :			
-			
-				del self.combinaison[i]
-				point = len(self.combinaison)
-				i = i - 1
-
-			elif(i < point and self.combinaison[i].count('x') > 2) :
-			
-				print("x win")
-				self.continuer = False
-
-			elif(i < point and self.combinaison[i].count('o') > 2) :
-				print("o win")
-				self.continuer = False
-
-			else :
-
-				i = i + 1
-
-	def search_local(self) :
-
-
-		self.print_tic_tac_toe()
-		point = len(self.combinaison)
-		i = 0
-
-		while i < point and self.continuer:
-
-			if(i < point and 'x' in self.combinaison[i] and 'o' in self.combinaison[i]) :			
-			
-				del self.combinaison[i]
-				point = len(self.combinaison)
-				i = i - 1
-
-			elif(i < point and self.combinaison[i].count('x') > 2) :
-			
-				print("x win")
-				self.continuer = False
-				self.partie = 1
-
-			elif(i < point and self.combinaison[i].count('o') > 2) :
-				print("o win")
-				self.continuer = False
-				self.partie = 2
-
-			else :
-
-				i = i + 1
-
-
-	def comb_local(self,user,color,char) :
-
-		continuer = True
-
-		if(self.values[int(user)-1] != '\033[36m' + 'o' + '\033[37m' and self.values[int(user)-1] != '\033[35m' + 'x' + '\033[37m') :
-
-			self.values[int(user)-1] = color + str(char) + '\033[37m'
-			self.liste[int(user)-1] = str(char) 
-
-			for i in range(len(self.combinaison)) :
-				for j in range(len(self.combinaison[i])) :
-
-					if(self.combinaison[i][j] == int(user)-1) :
-						self.combinaison[i][j] = char
-
-			continuer = False
-
-		else :
-
-			print("vous allez pas prendre la position de votre adversaire")
-
-		return continuer
+		for i in range(size) :
+			if (i < size) and (self.__combination[i].count('x') == 3) :	
+				self.__why_win = 1
+				self.__continue = False
+			elif (i < size) and (self.__combination[i].count('o') == 3) :
+				self.__why_win = 2
+				self.__continue = False
 
 	def print_tic_tac_toe(self):
 
-		
+		"""
+		=========================================================================
+		|							Print array for the morpion					|
+		=========================================================================
+		"""
 
 		print("\n")
 		print("\t     |     |")
-		print("\t  {}  |  {}  |  {}".format(self.values[0], self.values[1], self.values[2]))
+		print("\t  {}  |  {}  |  {}".format(self.__values[0], self.__values[1], self.__values[2]))
 		print('\t_____|_____|_____')
 		print("\t     |     |")
-		print("\t  {}  |  {}  |  {}".format(self.values[3], self.values[4], self.values[5]))
+		print("\t  {}  |  {}  |  {}".format(self.__values[3], self.__values[4], self.__values[5]))
 		print('\t_____|_____|_____')
 
 		print("\t     |     |")
-		print("\t  {}  |  {}  |  {}".format(self.values[6], self.values[7], self.values[8]))
+		print("\t  {}  |  {}  |  {}".format(self.__values[6], self.__values[7], self.__values[8]))
 		print("\t     |     |")
 		print("\n")
 

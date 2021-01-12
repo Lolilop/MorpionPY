@@ -3,50 +3,67 @@
 import socket
 import time
 
+"""
+									███╗░░░███╗░█████╗░██████╗░██████╗░██╗░█████╗░███╗░░██╗
+									████╗░████║██╔══██╗██╔══██╗██╔══██╗██║██╔══██╗████╗░██║
+									██╔████╔██║██║░░██║██████╔╝██████╔╝██║██║░░██║██╔██╗██║
+									██║╚██╔╝██║██║░░██║██╔══██╗██╔═══╝░██║██║░░██║██║╚████║
+									██║░╚═╝░██║╚█████╔╝██║░░██║██║░░░░░██║╚█████╔╝██║░╚███║
+									╚═╝░░░░░╚═╝░╚════╝░╚═╝░░╚═╝╚═╝░░░░░╚═╝░╚════╝░╚═╝░░╚══╝
+
+
+			 		 ██████ ██       █████  ███████ ███████     ███████ ███████ ██████  ██    ██ ███████ ██████      
+					██      ██      ██   ██ ██      ██          ██      ██      ██   ██ ██    ██ ██      ██   ██     
+					██      ██      ███████ ███████ ███████     ███████ █████   ██████  ██    ██ █████   ██████      
+					██      ██      ██   ██      ██      ██          ██ ██      ██   ██  ██  ██  ██      ██   ██     
+		             ██████ ███████ ██   ██ ███████ ███████     ███████ ███████ ██   ██   ████   ███████ ██   ██ """
+
 class Server() :
+
+	"""
+								██╗███╗   ██╗██╗████████╗██╗ █████╗ ████████╗███████╗██╗   ██╗██████╗ 
+								██║████╗  ██║██║╚══██╔══╝██║██╔══██╗╚══██╔══╝██╔════╝██║   ██║██╔══██╗
+								██║██╔██╗ ██║██║   ██║   ██║███████║   ██║   █████╗  ██║   ██║██████╔╝
+								██║██║╚██╗██║██║   ██║   ██║██╔══██║   ██║   ██╔══╝  ██║   ██║██╔══██╗
+								██║██║ ╚████║██║   ██║   ██║██║  ██║   ██║   ███████╗╚██████╔╝██║  ██║
+								╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝   ╚═╝╚═╝  ╚═╝   ╚═╝   ╚══════╝ ╚═════╝ ╚═╝  ╚═╝
+	"""
 
 	def __init__(self) :
 
-
-		host , port = '' , 5005
-
-		self.values = []
+		host , port = '' , 5009
 
 		try :
-
-			self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #creation socket IPV4 TCP
-
-			self.sock.bind((host,port)) #associe le socket à une adresse locale
-			self.sock.listen(5) #commence à écouter les connexions entrantes
-
-			self.client , self.info = self.sock.accept() #accepte une connexion, retourne un nouveau socket et une adresse client
-
+			self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #creation socket IPV4 TCP
+			self.__socket.bind((host,port)) #associe le socket à une adresse locale
+			self.__socket.listen(5) #commence à écouter les connexions entrantes
+			self.__client , self.__info = self.__socket.accept() #accepte une connexion, retourne un nouveau socket et une adresse client
 		except socket.error :
-
-			self.socke.close()
+			self.__socket.close() #ferme la connexion
 			exit()
 
-	def client(self) :
-
-		continuer  = False
-
-		while continuer == False :
-
-			user = input("> ")
-			user = int(user)
-
-			if(self.values[user - 1] != 'o' or self.values[user - 1] != 'x' ) :
-
-				self.values[user - 1] = 'x'
-				continuer = True
+	"""
+							███████╗ ██████╗ ███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
+							██╔════╝██╔═══██╗████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
+							█████╗  ██║   ██║██╔██╗ ██║██║        ██║   ██║██║   ██║██╔██╗ ██║███████╗
+							██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ██║██║   ██║██║╚██╗██║╚════██║
+							██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║
+							╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
+                                                
+	"""
 
 	def receive(self) :
 
-		try :
+		"""
+		=========================================================================
+		|							get the data of the client	 				|
+		=========================================================================
+		"""
 
-			message = str(self.client.recv(1024))
+		try :
+			message = str(self.__client.recv(1024))
 		except socket.error:
-			self.sock.close()
+			self.__socket.close()
 			exit()
 
 		message = message.split("b'")
@@ -56,27 +73,37 @@ class Server() :
 
 	def seedValue(self,values) :
 
+		"""
+		=========================================================================
+		|						seend the data of the client	 				|
+		=========================================================================
+		"""
+
 		for valeur in values :
 		
 			message = valeur.encode()
 		
 			try :
-				self.client.send(message)
+				self.__client.send(message)
 			except socket.error :
-				self.sock.close()
+				self.__socket.close()
 				exit()
-
 			time.sleep(0.0001)
 
-			time.sleep(0.0001)
 		try :
-			self.client.send(b"seend all")
+			self.__client.send(b"seend all")
 		except socket.error :
-			self.sock.close()
+			self.__socket.close()
 			exit()
 
 
 	def seedValueB(self) :
+
+		"""
+		=========================================================================
+		|						seend the data of the client	 				|
+		=========================================================================
+		"""
 
 		message = ""
 		
@@ -86,16 +113,22 @@ class Server() :
 				self.client.send(b"break")
 				message = self.client.recv(1024)
 			except socket.error :
-				self.socke.close()
+				self.__socket.close()
 				exit()
 
 	def seedValueNum(self,partie) :
+
+		"""
+		=========================================================================
+		|						seend the data of the why_win				|
+		=========================================================================
+		"""
 
 		game = str(partie.encode())
 
 		try :
 			self.client.send(game)
 		except :
-			self.sock.close()
+			self.__socket.close()
 			exit()
 
